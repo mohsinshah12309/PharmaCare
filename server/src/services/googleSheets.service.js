@@ -5,7 +5,6 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const KEY_PATH = path.join(__dirname, '../../', process.env.GOOGLE_SERVICE_ACCOUNT_PATH)
 
 const HEADERS = [
   'Order Number',
@@ -23,10 +22,25 @@ const HEADERS = [
 
 let sheetInstance = null
 
+const loadCredentials = () => {
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    // Used on Render/production — full JSON pasted as an env var
+    return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON)
+  }
+
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_PATH) {
+    // Used on local dev — path to the downloaded key file
+    const KEY_PATH = path.join(__dirname, '../../', process.env.GOOGLE_SERVICE_ACCOUNT_PATH)
+    return JSON.parse(fs.readFileSync(KEY_PATH, 'utf-8'))
+  }
+
+  throw new Error('No Google service account credentials found in environment variables')
+}
+
 const getSheet = async () => {
   if (sheetInstance) return sheetInstance
 
-  const credentials = JSON.parse(fs.readFileSync(KEY_PATH, 'utf-8'))
+  const credentials = loadCredentials()
 
   const auth = new JWT({
     email: credentials.client_email,
