@@ -27,52 +27,47 @@ export const createOrder = async (req, res) => {
       totalAmount,
     })
 
-    // Build full item details for Excel + email (name, description, price)
-    const detailedItems = await Promise.all(
-      items.map(async (i) => {
-        const product = await Product.findById(i.productId)
-        return {
-          name: product?.name || 'Unknown',
-          description: product?.description || '',
-          price: i.price,
-          quantity: i.quantity,
-        }
-      })
-    )
-
-    const customer = { name, phone, address: shippingAddress, city, postal }
-
-    // Write to Excel (don't let failures block the order response)
-try {
-  await appendOrderToExcel({ orderNumber, customer, items: detailedItems, totalAmount })
-} catch (e) {
-  console.error('Excel write failed:', e.message)
-}
-
-// Write to Google Sheets
-try {
-  await appendOrderToGoogleSheet({ orderNumber, customer, items: detailedItems, totalAmount })
-} catch (e) {
-  console.error('Google Sheets write failed:', e.message)
-}
-
-    // Send email (don't let failures block the order response)
-    try {
-      await sendOrderEmail({ orderNumber, customer, items: detailedItems, totalAmount })
-    } catch (e) {
-      console.error('Email send failed:', e.message)
-    }
-
+    // Respond to the user immediately — don't make them wait on Excel/Sheets/Email
     res.status(201).json({ order })
-  } catch (err) {
-    res.status(500).json({ message: err.message })
-  }
-}
 
-export const getMyOrders = async (req, res) => {
-  try {
-    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 })
-    res.json({ orders })
+    // Everything below runs in the background, after the response is already sent
+    ;(async () => {
+      try {
+        const detailedItems = await Promise.all(
+          items.map(async (i) => {
+            const product = await Product.findById(i.productId)
+            return {
+              name: product?.name || 'Unknown',
+              description: product?.description || '',
+              price: i.price,
+              quantity: i.quantity,
+            }
+          })
+        )
+
+        const customer = { name, phone, address: shippingAddress, city, postal }
+
+        // try {
+        //   await appendOrderToExcel({ orderNumber, customer, items: detailedItems, totalAmount })
+        // } catch (e) {
+        //   console.error('Excel write failed:', e.message)
+        // }
+
+        try {
+          await appendOrderToGoogleSheet({ orderNumber, customer, items: detailedItems, totalAmount })
+        } catch (e) {
+          console.error('Google Sheets write failed:', e.message)
+        }
+
+        try {
+          await sendOrderEmail({ orderNumber, customer, items: detailedItems, totalAmount })
+        } catch (e) {
+          console.error('Email send failed:', e.message)
+        }
+      } catch (e) {
+        console.error('Background order processing failed:', e.message)
+      }
+    })()
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
