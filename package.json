@@ -1,0 +1,22 @@
+{
+  "name": "pharmacy-ecommerce",
+  "version": "1.0.0",
+  "description": "Full-stack Pharmacy E-Commerce Application",
+  "scripts": {
+    "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm run dev\"",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "seed": "cd server && npm run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.3.2",
+    "mongodb": "^7.5.0",
+    "postcss": "^8.5.16",
+    "react-router": "^7.18.1",
+    "tailwindcss": "^4.3.2"
+  }
+}

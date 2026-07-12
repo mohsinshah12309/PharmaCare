@@ -1,0 +1,166 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                  PHARMACARE QUICK START                       ║
+╚═══════════════════════════════════════════════════════════════╝
+
+STEP 1: Configure Environment
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Update these files with your credentials:
+
+1. server/.env
+   - MONGODB_URI (MongoDB Atlas connection string)
+   - JWT_SECRET (any random string for JWT)
+   - CLOUDINARY_* (Image upload credentials)
+
+2. client/.env
+   - VITE_API_URL=http://localhost:5000/api (pre-configured)
+
+
+STEP 2: Install Dependencies
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+From the pharmacy root folder:
+  npm run install-all
+
+Or manually:
+  cd server && npm install
+  cd ../client && npm install
+
+
+STEP 3: Seed Database (Optional)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Initialize default product categories:
+  npm run seed
+
+
+STEP 4: Start Development Servers
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+From pharmacy root:
+  npm run dev
+
+OR separately:
+  Terminal 1: cd server && npm run dev
+  Terminal 2: cd client && npm run dev
+
+
+STEP 5: Access Application
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Frontend: http://localhost:5173
+Backend:  http://localhost:5000
+API:      http://localhost:5000/api
+
+
+STEP 6: Create Admin User
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Register at http://localhost:5173/register
+2. Login to MongoDB Atlas
+3. Find user in 'users' collection
+4. Change role from "user" to "admin"
+5. Login with admin account
+6. Access admin panel: http://localhost:5173/admin/dashboard
+
+
+FOLDER STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+pharmacy/
+├── server/               Backend (Node.js + Express)
+│   ├── src/
+│   │   ├── config/      Config files (DB, Cloudinary)
+│   │   ├── models/      MongoDB schemas
+│   │   ├── controllers/ Request handlers
+│   │   ├── routes/      API endpoints
+│   │   ├── middlewares/ Auth, uploads, errors
+│   │   ├── services/    Business logic
+│   │   └── seed/        Database initialization
+│   └── package.json
+│
+├── client/               Frontend (React + Vite)
+│   ├── src/
+│   │   ├── pages/       Page components
+│   │   ├── components/  Reusable components
+│   │   ├── services/    API calls
+│   │   ├── context/     State management
+│   │   └── App.jsx      Main app
+│   └── package.json
+│
+├── package.json          Root scripts
+├── README.md             Full documentation
+├── SETUP_GUIDE.md        Detailed setup
+└── QUICK_START.txt      This file
+
+
+AVAILABLE SCRIPTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+npm run dev              Run both backend and frontend
+npm run server           Run backend only
+npm run client           Run frontend only  
+npm run seed             Seed database with categories
+npm run install-all      Install all dependencies
+
+
+REQUIRED ACCOUNTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. MongoDB Atlas (Free)
+   https://www.mongodb.com/cloud/atlas
+
+2. Cloudinary (Free)
+   https://cloudinary.com/
+
+3. Node.js v16+
+   https://nodejs.org/
+
+
+FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ User Authentication (Register/Login)
+✓ Product Browsing & Search
+✓ Shopping Cart (Persistent)
+✓ Checkout Process
+✓ Admin Dashboard
+✓ Product Management
+✓ Stock Management
+✓ Image Upload
+✓ Protected Routes
+✓ Role-based Access
+
+
+TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MongoDB Error?
+  → Check .env MONGODB_URI
+  → Allow your IP in MongoDB Atlas
+  → Verify credentials
+
+CORS Error?
+  → Check frontend VITE_API_URL
+  → Ensure backend is running
+
+Port Already in Use?
+  → Change PORT in server/.env
+  → Kill process: lsof -ti:5000 | xargs kill -9
+
+Image Upload Fails?
+  → Verify Cloudinary credentials
+  → Check API keys
+  → Ensure account is active
+
+
+NEXT STEPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Read SETUP_GUIDE.md for detailed instructions
+2. Read README.md for complete documentation
+3. Check server logs for debugging
+4. Test API endpoints with Postman
+5. Customize styling and content
+
+Ready to go! 🚀

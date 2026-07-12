@@ -1,0 +1,6 @@
+import { Link } from 'react-router-dom'
+const OrderConfirmation = () => {
+  const orderNum = Math.floor(Math.random() * 1000000)
+  return <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center px-4 py-12"><div className="bg-white rounded-lg shadow-2xl p-8 max-w-md text-center"><div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"><i className="fas fa-check text-5xl text-green-600"></i></div><h1 className="text-4xl font-bold text-gray-900 mb-2">Confirmed!</h1><p className="text-gray-600 text-lg mb-8">Order #${orderNum}</p><div className="space-y-3 mb-8"><div className="flex gap-4"><div className="text-2xl text-green-600"><i className="fas fa-check-circle"></i></div><div className="text-left"><p className="font-semibold">Received</p><p className="text-sm text-gray-600">Order received</p></div></div><div className="flex gap-4"><div className="text-2xl text-gray-400"><i className="fas fa-clock"></i></div><div className="text-left"><p className="font-semibold">Processing</p><p className="text-sm text-gray-600">1-2 hours</p></div></div></div><Link to="/" className="block w-full py-3 bg-green-500 text-white rounded-lg font-bold">Continue</Link></div></div>
+}
+export default OrderConfirmation
