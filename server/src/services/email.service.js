@@ -50,15 +50,9 @@ export const sendOrderEmail = async ({ orderNumber, customer, items, totalAmount
   `
 
   await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: 'mohsinalishahnaqvi123@gmail.com',
-    subject: `New Order ${orderNumber}`,
-    html,
-    attachments: [
-      {
-        filename: 'orders.xlsx',
-        path: EXCEL_PATH,
-      },
-    ],
-  })
+  from: process.env.EMAIL_USER,
+  to: 'mohsinalishahnaqvi123@gmail.com',
+  subject: `New Order ${orderNumber}`,
+  html,
+})
 }

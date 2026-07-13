@@ -1,6 +1,5 @@
 import Order from '../models/Order.js'
 import Product from '../models/Product.js'
-import { appendOrderToExcel } from '../services/excel.service.js'
 import { sendOrderEmail } from '../services/email.service.js'
 import { appendOrderToGoogleSheet } from '../services/googleSheets.service.js'
 
@@ -27,10 +26,8 @@ export const createOrder = async (req, res) => {
       totalAmount,
     })
 
-    // Respond to the user immediately — don't make them wait on Excel/Sheets/Email
     res.status(201).json({ order })
 
-    // Everything below runs in the background, after the response is already sent
     ;(async () => {
       try {
         const detailedItems = await Promise.all(
@@ -47,12 +44,6 @@ export const createOrder = async (req, res) => {
 
         const customer = { name, phone, address: shippingAddress, city, postal }
 
-        // try {
-        //   await appendOrderToExcel({ orderNumber, customer, items: detailedItems, totalAmount })
-        // } catch (e) {
-        //   console.error('Excel write failed:', e.message)
-        // }
-
         try {
           await appendOrderToGoogleSheet({ orderNumber, customer, items: detailedItems, totalAmount })
         } catch (e) {
@@ -68,6 +59,15 @@ export const createOrder = async (req, res) => {
         console.error('Background order processing failed:', e.message)
       }
     })()
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
+export const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 })
+    res.json({ orders })
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
