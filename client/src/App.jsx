@@ -22,6 +22,7 @@ import ManageStock from "./pages/admin/ManageStock";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AdminRoute from "./routes/AdminRoute";
 import ManageCategories from "./pages/admin/ManageCategories";
+import EditProduct from "./pages/admin/EditProduct";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -48,6 +49,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/admin/edit-product/:id" element={<EditProduct />} />
         <Route
           path="/order-confirmation"
           element={
