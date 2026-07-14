@@ -15,16 +15,16 @@ const transporter = nodemailer.createTransport({
 
 export const sendOrderEmail = async ({ orderNumber, customer, items, totalAmount }) => {
   const itemsHtml = items
-    .map(
-      (i) =>
-        `<tr>
-          <td style="padding:6px;border:1px solid #ddd;">${i.name}</td>
-          <td style="padding:6px;border:1px solid #ddd;">${i.description}</td>
-          <td style="padding:6px;border:1px solid #ddd;">Rs ${i.price}</td>
-          <td style="padding:6px;border:1px solid #ddd;">${i.quantity}</td>
-        </tr>`
-    )
-    .join('')
+  .map(
+    (i) =>
+      `<tr>
+        <td style="padding:6px;border:1px solid #ddd;">${i.name}${i.unitLabel ? ` (${i.unitLabel})` : ''}</td>
+        <td style="padding:6px;border:1px solid #ddd;">${i.description}</td>
+        <td style="padding:6px;border:1px solid #ddd;">Rs ${i.price}</td>
+        <td style="padding:6px;border:1px solid #ddd;">${i.quantity}</td>
+      </tr>`
+  )
+  .join('')
 
   const html = `
     <h2>New Order Received — ${orderNumber}</h2>

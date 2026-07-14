@@ -9,6 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const HEADERS = [
   'Order Number',
   'Item Name',
+  'Unit',
   'Description',
   'Price',
   'Quantity',
@@ -65,19 +66,20 @@ const getSheet = async () => {
 export const appendOrderToGoogleSheet = async ({ orderNumber, customer, items, totalAmount }) => {
   const sheet = await getSheet()
 
-  const rows = items.map((item) => ({
-    'Order Number': orderNumber,
-    'Item Name': item.name,
-    'Description': item.description,
-    'Price': item.price,
-    'Quantity': item.quantity,
-    'Customer Name': customer.name,
-    'Address': customer.address,
-    'City': customer.city,
-    'Phone': customer.phone,
-    'Total Amount': totalAmount,
-    'Date': new Date().toLocaleString(),
-  }))
+ const rows = items.map((item) => ({
+  'Order Number': orderNumber,
+  'Item Name': item.name,
+  'Unit': item.unitLabel || 'Standard',
+  'Description': item.description,
+  'Price': item.price,
+  'Quantity': item.quantity,
+  'Customer Name': customer.name,
+  'Address': customer.address,
+  'City': customer.city,
+  'Phone': customer.phone,
+  'Total Amount': totalAmount,
+  'Date': new Date().toLocaleString(),
+}))
 
   await sheet.addRows(rows)
 }

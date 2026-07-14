@@ -20,6 +20,7 @@ export const createOrder = async (req, res) => {
         productId: i.productId,
         quantity: i.quantity,
         price: i.price,
+        unitLabel: i.unitLabel || null,
       })),
       shippingAddress,
       paymentMethod,
@@ -38,6 +39,7 @@ export const createOrder = async (req, res) => {
               description: product?.description || '',
               price: i.price,
               quantity: i.quantity,
+              unitLabel: i.unitLabel || '',
             }
           })
         )

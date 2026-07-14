@@ -1,11 +1,111 @@
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
+
 const Cart = () => {
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCart()
   const { isAuthenticated } = useAuth()
   const total = getTotalPrice()
-  if (items.length === 0) return <div className="min-h-screen bg-gray-50 py-12 flex items-center justify-center"><div className="text-center"><i className="fas fa-shopping-cart text-6xl text-gray-300 mb-4 block"></i><h1 className="text-4xl font-bold text-gray-900 mb-4">Cart Empty</h1><Link to="/" className="inline-block px-8 py-3 bg-green-500 text-white rounded-lg font-bold">Continue Shopping</Link></div></div>
-  return <div className="min-h-screen bg-gray-50 py-12 px-4"><div className="max-w-7xl mx-auto"><h1 className="text-4xl font-bold mb-8">Shopping Cart</h1><div className="grid grid-cols-1 lg:grid-cols-3 gap-8"><div className="lg:col-span-2 bg-white rounded-lg shadow p-6"><div className="space-y-4">{items.map(item => <div key={item._id} className="flex gap-4 pb-4 border-b"><img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded" /><div className="flex-1"><p className="font-bold">{item.name}</p><p className="text-green-600 font-bold">Rs {item.price}</p><div className="flex items-center gap-2 mt-2"><button onClick={() => updateQuantity(item._id, item.quantity - 1)} className="px-2 py-1 border rounded">−</button><input type="number" value={item.quantity} onChange={(e) => updateQuantity(item._id, parseInt(e.target.value))} className="w-12 text-center border rounded py-1" /><button onClick={() => updateQuantity(item._id, item.quantity + 1)} className="px-2 py-1 border rounded">+</button></div></div><div className="text-right"><p className="font-bold">Rs {item.price * item.quantity}</p><button onClick={() => removeItem(item._id)} className="text-red-600 text-sm font-semibold mt-2">Remove</button></div></div>)}</div><button onClick={clearCart} className="w-full mt-6 py-2 text-red-600 border-2 border-red-600 rounded-lg font-semibold">Clear</button></div><div className="bg-white rounded-lg shadow p-6 h-fit"><h2 className="text-2xl font-bold mb-6">Summary</h2><div className="space-y-4 pb-6 border-b"><div className="flex justify-between"><span>Subtotal</span><span>Rs {total.toFixed(2)}</span></div><div className="flex justify-between"><span>Shipping</span><span className="text-green-600">FREE</span></div><div className="flex justify-between"><span>Tax</span><span>Rs {(total * 0.05).toFixed(2)}</span></div></div><div className="flex justify-between text-lg font-bold mt-6 mb-6"><span>Total</span><span className="text-green-600">Rs {(total * 1.05).toFixed(2)}</span></div>{isAuthenticated ? <Link to="/checkout" className="w-full block text-center py-3 bg-green-500 text-white rounded-lg font-bold">Checkout</Link> : <Link to="/login" className="w-full block text-center py-3 bg-green-500 text-white rounded-lg font-bold">Login</Link>}</div></div></div></div>
+
+  if (items.length === 0)
+    return (
+      <div className="min-h-screen bg-gray-50 py-12 flex items-center justify-center">
+        <div className="text-center">
+          <i className="fas fa-shopping-cart text-6xl text-gray-300 mb-4 block"></i>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Cart Empty</h1>
+          <Link to="/" className="inline-block px-8 py-3 bg-green-500 text-white rounded-lg font-bold">
+            Continue Shopping
+          </Link>
+        </div>
+      </div>
+    )
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold mb-8">Shopping Cart</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
+            <div className="space-y-4">
+              {items.map((item) => (
+                <div key={item.cartId} className="flex gap-4 pb-4 border-b">
+                  <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded" />
+                  <div className="flex-1">
+                    <p className="font-bold">{item.name}</p>
+                    {item.unitLabel && item.unitLabel !== 'Standard' && (
+                      <p className="text-sm text-gray-500">{item.unitLabel}</p>
+                    )}
+                    <p className="text-green-600 font-bold">Rs {item.price}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => updateQuantity(item.cartId, item.quantity - 1)}
+                        className="px-2 py-1 border rounded"
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) => updateQuantity(item.cartId, parseInt(e.target.value))}
+                        className="w-12 text-center border rounded py-1"
+                      />
+                      <button
+                        onClick={() => updateQuantity(item.cartId, item.quantity + 1)}
+                        className="px-2 py-1 border rounded"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold">Rs {item.price * item.quantity}</p>
+                    <button
+                      onClick={() => removeItem(item.cartId)}
+                      className="text-red-600 text-sm font-semibold mt-2"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button onClick={clearCart} className="w-full mt-6 py-2 text-red-600 border-2 border-red-600 rounded-lg font-semibold">
+              Clear
+            </button>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6 h-fit">
+            <h2 className="text-2xl font-bold mb-6">Summary</h2>
+            <div className="space-y-4 pb-6 border-b">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>Rs {total.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Shipping</span>
+                <span className="text-green-600">FREE</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Tax</span>
+                <span>Rs {(total * 0.05).toFixed(2)}</span>
+              </div>
+            </div>
+            <div className="flex justify-between text-lg font-bold mt-6 mb-6">
+              <span>Total</span>
+              <span className="text-green-600">Rs {(total * 1.05).toFixed(2)}</span>
+            </div>
+            {isAuthenticated ? (
+              <Link to="/checkout" className="w-full block text-center py-3 bg-green-500 text-white rounded-lg font-bold">
+                Checkout
+              </Link>
+            ) : (
+              <Link to="/login" className="w-full block text-center py-3 bg-green-500 text-white rounded-lg font-bold">
+                Login
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
-export default Cart
+export default Cart 

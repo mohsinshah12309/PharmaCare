@@ -1,40 +1,41 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
-import { useAuth } from '../context/AuthContext'
-import api from '../services/api'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
 
 const Checkout = () => {
-  const navigate = useNavigate()
-  const { items, clearCart, getTotalPrice } = useCart()
-  const { user } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const navigate = useNavigate();
+  const { items, clearCart, getTotalPrice } = useCart();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: '',
-    address: '',
-    city: '',
-    postal: '',
-    paymentMethod: 'cod',
-  })
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: "",
+    address: "",
+    city: "",
+    postal: "",
+    paymentMethod: "cod",
+  });
 
-  const total = getTotalPrice()
-  const grandTotal = total * 1.05
+  const total = getTotalPrice();
+  const grandTotal = total * 1.05;
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
       const orderItems = items.map((item) => ({
         productId: item._id,
         quantity: item.quantity,
         price: item.price,
-      }))
+        unitLabel: item.unitLabel || null,
+      }));
 
-      await api.post('/orders', {
+      await api.post("/orders", {
         items: orderItems,
         shippingAddress: form.address,
         paymentMethod: form.paymentMethod,
@@ -43,23 +44,26 @@ const Checkout = () => {
         city: form.city,
         postal: form.postal,
         totalAmount: grandTotal,
-      })
+      });
 
-      clearCart()
-      navigate('/order-confirmation')
+      clearCart();
+      navigate("/order-confirmation");
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to place order')
+      setError(err.response?.data?.message || "Failed to place order");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">Checkout</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <form onSubmit={handleSubmit} className="md:col-span-2 bg-white rounded-lg shadow p-8">
+          <form
+            onSubmit={handleSubmit}
+            className="md:col-span-2 bg-white rounded-lg shadow p-8"
+          >
             <h2 className="text-2xl font-bold mb-4">Shipping</h2>
             {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -125,8 +129,10 @@ const Checkout = () => {
                   type="radio"
                   name="payment"
                   value="cod"
-                  checked={form.paymentMethod === 'cod'}
-                  onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+                  checked={form.paymentMethod === "cod"}
+                  onChange={(e) =>
+                    setForm({ ...form, paymentMethod: e.target.value })
+                  }
                 />
                 <span>Cash on Delivery</span>
               </label>
@@ -135,8 +141,10 @@ const Checkout = () => {
                   type="radio"
                   name="payment"
                   value="card"
-                  checked={form.paymentMethod === 'card'}
-                  onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+                  checked={form.paymentMethod === "card"}
+                  onChange={(e) =>
+                    setForm({ ...form, paymentMethod: e.target.value })
+                  }
                 />
                 <span>Card</span>
               </label>
@@ -145,10 +153,10 @@ const Checkout = () => {
               type="submit"
               disabled={loading}
               className={`w-full py-3 rounded-lg font-bold text-white transition ${
-                loading ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'
+                loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
               }`}
             >
-              {loading ? 'Processing...' : 'Place Order'}
+              {loading ? "Processing..." : "Place Order"}
             </button>
           </form>
           <div className="bg-white rounded-lg shadow p-6 h-fit">
@@ -171,6 +179,6 @@ const Checkout = () => {
         </div>
       </div>
     </div>
-  )
-}
-export default Checkout
+  );
+};
+export default Checkout;
