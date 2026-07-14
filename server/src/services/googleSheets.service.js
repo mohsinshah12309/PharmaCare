@@ -25,22 +25,16 @@ let sheetInstance = null
 
 const loadCredentials = () => {
   if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-    // Used on Render/production — full JSON pasted as an env var
     return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON)
   }
-
   if (process.env.GOOGLE_SERVICE_ACCOUNT_PATH) {
-    // Used on local dev — path to the downloaded key file
     const KEY_PATH = path.join(__dirname, '../../', process.env.GOOGLE_SERVICE_ACCOUNT_PATH)
     return JSON.parse(fs.readFileSync(KEY_PATH, 'utf-8'))
   }
-
   throw new Error('No Google service account credentials found in environment variables')
 }
 
 const getSheet = async () => {
-  if (sheetInstance) return sheetInstance
-
   const credentials = loadCredentials()
 
   const auth = new JWT({
@@ -54,32 +48,43 @@ const getSheet = async () => {
 
   let sheet = doc.sheetsByIndex[0]
 
-  await sheet.loadHeaderRow().catch(async () => {
-    // No header row exists yet — set it now
-    await sheet.setHeaderRow(HEADERS)
-  })
+  // Always verify the header row matches exactly — fixes column misalignment
+  try {
+    await sheet.loadHeaderRow()
+    const currentHeaders = sheet.headerValues
 
-  sheetInstance = sheet
+    const headersMatch =
+      currentHeaders.length === HEADERS.length &&
+      currentHeaders.every((h, i) => h === HEADERS[i])
+
+    if (!headersMatch) {
+      await sheet.setHeaderRow(HEADERS)
+    }
+  } catch (e) {
+    // No header row at all yet — set it now
+    await sheet.setHeaderRow(HEADERS)
+  }
+
   return sheet
 }
 
 export const appendOrderToGoogleSheet = async ({ orderNumber, customer, items, totalAmount }) => {
   const sheet = await getSheet()
 
- const rows = items.map((item) => ({
-  'Order Number': orderNumber,
-  'Item Name': item.name,
-  'Unit': item.unitLabel || 'Standard',
-  'Description': item.description,
-  'Price': item.price,
-  'Quantity': item.quantity,
-  'Customer Name': customer.name,
-  'Address': customer.address,
-  'City': customer.city,
-  'Phone': customer.phone,
-  'Total Amount': totalAmount,
-  'Date': new Date().toLocaleString(),
-}))
+  const rows = items.map((item) => ({
+    'Order Number': orderNumber,
+    'Item Name': item.name,
+    'Unit': item.unitLabel || 'Standard',
+    'Description': item.description,
+    'Price': item.price,
+    'Quantity': item.quantity,
+    'Customer Name': customer.name,
+    'Address': customer.address,
+    'City': customer.city,
+    'Phone': customer.phone,
+    'Total Amount': totalAmount,
+    'Date': new Date().toLocaleString(),
+  }))
 
   await sheet.addRows(rows)
 }
