@@ -16,3 +16,6 @@ export const searchProducts = async (term, params = {}) => {
 export const getCategories = async () => {
   return (await api.get("/products/categories")).data;
 };
+export const aiChat = async (message) => {
+  return (await api.post("/products/ai-chat", { message })).data;
+};
