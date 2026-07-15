@@ -1,6 +1,5 @@
 import express from 'express'
 import { getProducts, getProduct, getCategories, aiChat } from '../controllers/product.controller.js'
-import { getProducts, getProduct, getCategories } from '../controllers/product.controller.js'
 
 const router = express.Router()
 
