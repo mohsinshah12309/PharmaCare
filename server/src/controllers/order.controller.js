@@ -2,6 +2,7 @@ import Order from '../models/Order.js'
 import Product from '../models/Product.js'
 import { sendOrderEmail } from '../services/email.service.js'
 import { appendOrderToGoogleSheet } from '../services/googleSheets.service.js'
+import { io } from '../server.js'
 
 export const createOrder = async (req, res) => {
   try {
@@ -28,6 +29,15 @@ export const createOrder = async (req, res) => {
     })
 
     res.status(201).json({ order })
+
+    // Notify any connected admin dashboards immediately
+    io.emit('new-order', {
+      orderNumber: order.orderNumber,
+      totalAmount: order.totalAmount,
+      itemCount: items.length,
+      customerName: name,
+      createdAt: order.createdAt,
+    })
 
     ;(async () => {
       try {

@@ -1,5 +1,6 @@
 import Product from '../models/Product.js'
 import Category from '../models/Category.js'
+import { chatWithCatalog } from '../services/ai.service.js'
 
 export const getProducts = async (req, res) => {
   try {
@@ -41,5 +42,19 @@ export const getCategories = async (req, res) => {
     res.json({ categories })
   } catch (err) {
     res.status(500).json({ message: err.message })
+  }
+}
+
+export const aiChat = async (req, res) => {
+  try {
+    const { message } = req.body
+    if (!message || !message.trim()) {
+      return res.status(400).json({ message: 'Message is required' })
+    }
+    const result = await chatWithCatalog(message)
+    res.json(result)
+  } catch (err) {
+    console.error('AI chat error:', err.message)
+    res.status(500).json({ message: 'AI assistant is temporarily unavailable' })
   }
 }
